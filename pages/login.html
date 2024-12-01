@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Login</title>
+</head>
+<body>
+    <h1>Login</h1>
+    <form onsubmit="submtHandler(event)">
+        <input type="text" name="username" id="username" placeholder="username">
+        <input type="password" name="password" id="password" placeholder="password">
+        <input type="submit" value="login">
+
+    </form>
+    <script>
+        async function submtHandler(e) {
+            e.preventDefault();
+            let username = e.target.username.value;
+            let password = e.target.password.value;
+            let res = await fetch("/api/login", {
+                method: "POST",
+                headers: {
+                    "content-type": "application/json"
+                },
+                body: JSON.stringify({ username, password})
+            })
+
+            // let res = await window.fetch("/api/login",{
+            //     method : "POST",
+            //     headers : {
+            //         "content-type ":"application/json"
+            //     },
+            //     body: JSON.stringify({username,password})
+            // })
+           
+            let data = await res.json();
+            console.log(data);
+            alert(data.msg);
+            if(data.token) {
+                localStorage.setItem("token",data.token)
+                location.href= "/profile.html"
+            }
+        }
+    </script>
+</body>
+</html>

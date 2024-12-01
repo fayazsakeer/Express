@@ -1,0 +1,100 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Profle</title>
+</head>
+<body>
+    <button onclick="logout()">Logout</button>
+    <div class="details">
+
+    </div>
+   
+    <div class="emil">
+       <form onsubmit="editEmail(event)">
+        <br><br><br>
+        <input type="email" id="email" name="email" placeholder="enter your email" >
+        <input type="submit" >
+       </form> 
+    </div><br><br>
+    <div class="pass">
+        <form onsubmit="editPassword(event)">
+            <input type="password" id="oldpass" name="oldpass" placeholder="Enter your current password"><br>
+            <input type="password" id="newpass1" name="newpass1" placeholder="Enter your new password"><br>
+            <input type="password" id="newpass2" name="newpass2" placeholder="Re-Enter your new password"><br>
+            <input type="submit">
+        </form>
+    </div>
+    <script>
+        let email = document.getElementById("email")
+        if(!localStorage.getItem("token")){
+            location.href = "/login.html"
+        }
+        let details = document.querySelector(".details")
+        async function getProfle() {
+            let res = await fetch ("/api/profile",{
+                method: "GET",
+                headers:{
+                    "authorization" : `Bearer ${localStorage.getItem("token")}`
+                }
+            })
+            let data = await res.json()
+            console.log(data._doc);
+            
+            details.innerHTML += `<h1>${data._doc.username}</h1>`
+            details.innerHTML += `<p>${data._doc.email}</p><hr>`
+
+        }
+        
+        function logout(){
+            localStorage.removeItem("token");
+            location.href = "/login.html"
+        }
+        async function editEmail(e) {
+            e.preventDefault()
+            document.getElementById("email")
+        let newEmail = e.target.email.value
+
+        let res = await fetch("/api/editEmail", {
+            method: "PUT",
+            headers: {
+                "Content-Type": "application/json",
+                "Authorization": `Bearer ${localStorage.getItem("token")}`
+            },
+            body: JSON.stringify({ newEmail })
+        });
+
+        let data = await res.json();
+        console.log(data);
+        alert(data.msg);
+        }
+         
+        async function editPassword(e) {
+            e.preventDefault()
+        let oldpass = e.target.oldpass.value;
+        let newpass1 = e.target.newpass1.value;
+        let newpass2 = e.target.newpass2.value
+
+        if(newpass1 != newpass2 )
+        return
+        location.href = "/login.html"
+
+        let res = await fetch("/api/editPassword", {
+            method: "PUT",
+            headers: {
+                "Content-Type": "application/json",
+                "Authorization": `Bearer ${localStorage.getItem("token")}`
+            },
+            body: JSON.stringify({ newPassword })
+        });
+
+        let data = await res.json();
+        console.log(data);
+        alert(data.msg);
+    }
+    getProfle()
+
+    </script>
+</body>
+</html>
